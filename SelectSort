@@ -1,0 +1,21 @@
+选择排序： Space: O(n^2), Time: O(1)
+
+选择排序也是通过两层遍历来实现数组的排序的。其核心思想是通过一层遍历寻找未排序部分的最大元素（或最小元素），并将其放到未排序部分的最后（或开头）。再用第二层遍历重复该操作 n - 1 次就能完成排序
+
+def selectSort(alist):
+  for i in range(len(alist) - 1, 0, -1):      # i 用于标记 已排序和未排序数组的分界。（大于 i 为已排序部分）
+    curr_max_idx = 0                          # 记录当前循环下，最大元素的索引值。第二层遍历
+    for index in range(1, i+1):               # 下面会解释这层循环的上下限为什么是(1, i+1)。第一层遍历
+      if alist[curr_max_idx] < alist[index]:
+        curr_max_idx = index
+    alist[i], alist[curr_max_idx] = alist[curr_max_idx], alist[i]
+  return alist
+
+为什么上下限为什么是(1, i+1)？假设有如下数组
+首先 curr_max_idx会找到数组中最大元素的索引值（1），i的值为 4。由于range是包含前一个，但不包含后一个，所以index的取值范围是[1, 5-1]，即[1, 4] (包含1和4）。这样一来，当index 取 4 （或等于当前的 i 值）时，才要发生一次 互换。此时的 i 正好是未排序数组的最后一位的索引值。
+[7, 10, 3, 6, 9]
+     |        |
+curr_max_idx  i
+由于alist[curr_max_idx] > alist[i]，所以进行完一次 第二层遍历后，10和9 互换，得到：
+[7, 9, 3, 6, 10]
+
