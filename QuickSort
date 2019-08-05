@@ -1,0 +1,96 @@
+快速排序  Time: O(nlogn), Space: O(n)
+
+快速排序首先要选一个值，称为 pivot，作用是用于拆分数组。 pivot 属于最终排序数组的实际位置，将用于将数组划分为快速排序的后续调用。
+假设有这样一个数组 alist = [54, 26, 93, 17, 77, 31, 44, 55, 20]
+                           |
+                         pivot
+且假设pivot为54。我们知道，54最终的为止应该是在第6位。接下来将发生partition的过程。它将找到分割点，同时将其他项移动到列表的适当侧（即，如果小于 pivot就放到左边；反之放到右边）。
+
+分区（partition）通过在列表中剩余元素的开始和结束处 定位两个位置标记（leftmark, rightmark）。
+分区（partition）的目标是  移动相对于pivot，位于错误侧的元素，同时也收敛于分裂点。下图是对于54这个元素的定位过程：
+[54, 26, 93, 17, 77, 31, 44, 55, 20]     leftmark和rightmark会最终收敛于分裂点（split point）
+ |    |                           |
+pivot leftmark -->         <-- rightmark
+
+[54, 26, 93, 17, 77, 31, 44, 55, 20]        因为26 < 54，所以leftmark向右移动，直到我们发现 93 > 54， 且20 < 54，停止移动
+ |        |                       |         将leftmark和rightmark所指向的元素互换
+pivot  leftmark               rightmark
+       
+[54, 26, 20, 17, 77, 31, 44, 55, 93]        互换之后得到这个新的数组，然后将leftmark和rightmark 朝箭头方向移动
+ |        |                       |
+pivot  leftmark -->       <-- rightmark
+
+[54, 26, 20, 17, 77, 31, 44, 55, 93]        此时，由于leftmark值向17，rightmark指向55。
+ |            | -->       <-- |             pivot、17和55正好满足 17<pivot<55，所以不用互换，继续移动leftmark,rightmark
+pivot      leftmark       rightmark
+
+[54, 26, 20, 17, 77, 31, 44, 55, 93]        将leftmark和rightmark分别相向移动到 77，44时，由于是 
+ |                |       |                 alist[leftmark] > pivot > alist[rightmark]，所以要将77和44的位置互换，得到
+pivot         leftmark  rightmark
+
+[54, 26, 20, 17, 44, 31, 77, 55, 93]        然后继续移动leftmark和rightmark
+ |                |       |                 
+pivot         leftmark  rightmark
+
+[54, 26, 20, 17, 44, 31, 77, 55, 93]        此时leftmark和rightmark同时指向了31，这时，如果pivot > leftmark/rightmark
+ |                   |                      就将这两个值互换即可
+pivot         leftmark/rightmark            此时并不满足 leftmark > rightmark的停止条件，所以有：
+
+[54, 26, 20, 17, 44, 31, 77, 55, 93]        由于alist[leftmark] < pivot，所以先向右移动 leftmark到 77 位置
+ |                   |    |                 然后此时的 leftmark > rightmark，满足终止条件。
+pivot         rightmark  leftmark
+我们不难看出，当leftmark与rightmark重合的位置，就是pivot的正确位置。又由于while循环最后要 对 leftmark加1 来满足终止条件，所以，我们不能用leftmark作为分割点，而应该使用rightmark。（实际上我们也可以用leftmark - 1作为分割点）
+
+[31, 26, 20, 17, 44, 54, 77, 55, 93]        互换后得到该数组。此时的数组，54位于正确的位置。
+根据这一信息，我们可以将数组分为  left ,  pivot,  right 三部分：
+[31, 26, 20, 17, 44],  54  [77, 55, 93]
+然后根据 divide and conquer的思想，对左右两个  子数组重复上面 将54归位的过程，直到所有元素都位于正确位置为止。
+
+
+def partition(alist, first, last):   # first为0， last 为 len(alist) - 1
+  pivot = alist[first]
+  leftmark = first + 1
+  rightmark = last
+  done = False
+  while not done:
+    while leftmark <= rightmark and alist[leftmark] <= pivot:
+      leftmark += 1
+    while leftmark <= rightmark and alist[rightmark] >= pivot:
+      rightmark -= 1
+    if leftmark > rightmark:        # 当 leftmark > rightmark，说明除了pivot外其他元素都位于正确的 一侧
+      done = True
+    else:                           # 当alist[leftmark]>pivot>alist[rightmark], 互换alist[leftmark], alist[rightmark]
+      alist[leftmark], alist[rightmark] = alist[rightmark], alist[leftmark]
+  # 最后我们要将 pivot 换到它的正确位置，也就是 rightmark 所指的位置
+  alist[rightmark], alist[first] = alist[first], alist[rightmark]
+  return rightmark                  # 最后返回的rightmark 用作 切分数组的 切割点 (下面会解释为什么只能用rightmark而不用leftmark）
+  
+def quickSortHelper(alist, first, last):
+  if first < last:
+    splitpoint = partition(alist, first, last)    # 用partition函数得到切割点splitpoint
+    quickSortHelper(alist, first, splitpoint-1)   # 递归，将原数组alist不断切分为单个元素
+    quickSortHelper(alist, splitpoint+1, last)
+  return alist
+
+def quickSort(alist):                             # 最终的quickSort函数
+  return quickSortHelper(alist, 0, len(alist)-1)  # 返回最终排序好的数组
+    
+alist = [54,26,93,17,77,31,44,55,20]
+print(quickSort(alist))
+  
+（解释）为什么只能用rightmark做为splitpoint（分割点），而不能用 leftmark？
+这是上面partition过程的最后两步
+[54, 26, 20, 17, 44, 31, 77, 55, 93]        此时leftmark和rightmark同时指向了31，这时，如果pivot > leftmark/rightmark
+ |                   |                      就将这两个值互换即可
+pivot         leftmark/rightmark            此时并不满足 leftmark > rightmark的停止条件，所以有：
+
+[54, 26, 20, 17, 44, 31, 77, 55, 93]        由于alist[leftmark] < pivot，所以先向右移动 leftmark到 77 位置
+ |                   |    |                 然后此时的 leftmark > rightmark，满足终止条件。
+pivot         rightmark  leftmark
+我们不难看出，当leftmark与rightmark重合的位置，就是pivot的正确位置。又由于while循环最后要 对 leftmark加1 来满足终止条件，所以，我们不能用leftmark作为分割点，而应该使用rightmark。
+其实我们能发现，rightmark也可以用 leftmark-1 来代替。
+
+
+
+
+
