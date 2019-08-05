@@ -1,0 +1,28 @@
+
+
+def merge(alist, blist):
+  i, j = 0, 0
+  res = []
+  while i < len(alist) and j < len(blist):
+    if alist[i] < blist[j]:
+      res.append(alist[i])
+      i += 1
+    elif alist[i] >= blist[j]:
+      res.append(blist[j])
+      j += 1
+  while i < len(alist):
+    res.append(alist[i])
+    i += 1
+  while j < len(blist):
+    res.append(blist[j])
+    j += 1
+  return res
+  
+def mergeSort(alist):
+  if not alist or len(alist) <= 1:
+    return alist
+  middle = (len(alist)) // 2
+  lefthalf = mergeSort(alist[:middle])
+  righthalf = mergeSort(alist[middle:])
+  return merge(lefthalf, righthalf)
+  
