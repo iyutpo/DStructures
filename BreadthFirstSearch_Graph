@@ -15,7 +15,7 @@ def bfs(graph, start):
   while queue:
     node = queue.pop(0)
     if node not in visited:
-      visited.append(node)                # 也可以改成：visited.add(node)，如果graph定义时用的集合（set）作为邻接顶点
+      visited.append(node)              
       neighbors = graph[node]             # 相邻顶点
       for neighbor in neighbors:          # 将相邻顶点遍历，并存入queue中
         queue.append(neighbor)
