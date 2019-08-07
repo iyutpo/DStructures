@@ -1,0 +1,76 @@
+邻接表（Adjacent Table）
+
+邻接表通常用于表示图（Graph）。图 通常由 顶点（Vertex）和边（Edge）组成。有时，边（Edge）是有权重（Weight）的，所以我们可以用一个字典（Dictionary）来表示一个图。
+
+字典的键值（Key）表示顶点（Vertex），字典的值（Value）表示权重（Weight）。
+
+我们可以先定义一个Vertex类来表示顶点，并分别定义如下函数：
+class Vertex(object):
+  def __init__(self, key):
+    self.key = key                        # key表示当前顶点
+    self.connectedTo = {}                 # 连接到另一个顶点
+  def addNeighbor(self, nbr, weight=0):
+    self.connectedTo[nbr] = weight        # 从当前顶点连接到另一个顶点，权重为weight
+  def getKey(self):                       # 查找节点名（id）
+    return self.key
+  def getConnections(self):
+    return self.connectedTo.keys()        # 查找与当前节点直接相连的所有顶点
+  def getWeight(self, nbr):
+    return self.connectedTo[nbr]          # 查找当前顶点与nbr顶点的边的权重
+
+然后定义一个Graph类来实现一个图：
+class Graph(object):
+  def __init__(self):
+    self.vertList = {}              # 用于存放Graph中所有的顶点
+    self.numVertices = 0            # 记录Graph中顶点的个数
+  def addVertex(self, key):
+    self.numVertices += 1           # 每添加一个顶点，顶点个数就加一
+    newVertex = Vertex(key)         # 为新添加的顶点添加一个Vertex类
+    self.vertList[key] = newVertex  # 并将新Vertex类，根据键值key（也就是顶点id）添加到存放Graph所有顶点的字典中
+    return newVertex                # 最后将新创建的Vertex类返回
+  def getVertex(self, n):           # 查询一个节点是否在Graph中
+    if n in self.vertList:          # 如果存在，就返回该节点
+      return self.vertList[n]
+    else:                           # 否则就返回None
+      return None
+  def __contains__(self, n):        # 查询一个节点是否在Graph中
+    return n in self.vertList       # 只返回True或False
+  def addEdge(self, f, t, cost=0):  # 为Graph添加一个Edge，f为第一个顶点的id，t为第二个顶点的id，cost为两个边的weight
+    if f not in self.vertList:      # 若新添加的两个节点id都不在已有节点中
+      nv = self.addVertex(f)
+    if t not in self.vertList:
+      nv = self.addVertex(t)
+    self.vertList[f].addNeighbor(self.vertList[t], cost)  # 就将第一个节点f添加到已有节点字典中，然后将第二个节点t作为节点f的相邻节点添加到Graph中
+  def getVertices(self):
+    return self.vertList.keys()
+  def __iter__(self):
+    return iter(self.vertList.values())
+
+为Graph添加节点：
+g = Graph()
+for i in range(6):
+  g.addVertex(i)
+print(g.vertList)
+g.addEdge(0,1,5)
+g.addEdge(0,5,2)
+g.addEdge(1,2,4)
+g.addEdge(2,3,9)
+g.addEdge(3,4,7)
+g.addEdge(3,5,3)
+g.addEdge(4,0,1)
+g.addEdge(5,4,8)
+g.addEdge(5,2,1)
+for v in g:
+  for w in v.getConnections():
+    print('( %s, %s )' % (v.getKey(), w.getKey()))
+
+# output：
+( 0, 1 )
+( 0, 5 )
+( 1, 2 )
+( 2, 3 )
+( 3, 4 )
+( 3, 5 )
+( 4, 0 )
+( 5, 4 )
+( 5, 2 )
