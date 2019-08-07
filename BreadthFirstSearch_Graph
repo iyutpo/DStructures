@@ -1,0 +1,34 @@
+深度优先搜索——图
+
+
+除了为Graph创建一个Graph类之外， 我们还可以直接用一个字典来实现一个Graph。字典的键值为Graph的节点名（id），节点名所对应的值（Value）为 与该节点相连的其他节点的名字（id）。这个值（Value）可以是一个数组，也可以是一个集合（set）。例如：
+graph = {'A': ['B', 'C', 'E'],
+         'B': ['A','D', 'E'],
+         'C': ['A', 'F', 'G'],
+         'D': ['B'],
+         'E': ['A', 'B','D'],
+         'F': ['C'],
+         'G': ['C']}
+def bfs(graph, start):
+  visited = []
+  queue = [start]
+  while queue:
+    node = queue.pop(0)
+    if node not in visited:
+      visited.append(node)                # 也可以改成：visited.add(node)，如果graph定义时用的集合（set）作为邻接顶点
+      neighbors = graph[node]             # 相邻顶点
+      for neighbor in neighbors:          # 将相邻顶点遍历，并存入queue中
+        queue.append(neighbor)
+  return visited
+print(bfs(graph, list(graph.keys())[0]))  # list(graph.keys())[0]也可以换成 'A' （含引号）
+>> ['A', 'B', 'C', 'E', 'D', 'F', 'G']
+
+graph:
+                  A ----- C 
+                / |       | \
+              B   |       F  G
+             /  \ |
+           D ---- E
+            
+            
+            
