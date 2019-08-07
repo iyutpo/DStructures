@@ -1,0 +1,41 @@
+广度优先搜索——二叉树
+
+首先创建一个树节点（treenode）类：
+class treenode(object):
+  def __init__(self, value):
+    self.val = value
+    self.left = None
+    self.right = None
+
+然后初始化一棵二叉树：
+t1 = treenode(1)
+t1.left, t1.right = treenode(2), treenode(3)
+t1.left.right = treenode(41)
+                1
+              /   \
+            2       3
+             \
+              41
+
+然后定义广度优先搜索（bfs）：
+def bfs(root):
+  if not predecessor:
+    return []
+  predecessor = [root]
+  ans = []
+  while predecessor:
+    curr, next = [], []
+    for u in predecessor:
+      curr.append(u.val)
+      if u.left:
+        next.append(u.left)
+      if u.right:
+        next.append(u.right)
+    predecessor = next
+    ans.append(curr)
+  return ans
+
+调用该函数对上面的二叉树进行广度优先搜索：
+>> print(bfs(t1))
+>> [[1], [2, 3], [41]]
+
