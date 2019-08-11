@@ -19,7 +19,7 @@ t1.left.right = treenode(41)
 
 然后定义广度优先搜索（bfs）：
 def bfs(root):
-  if not predecessor:
+  if not root:
     return []
   predecessor = [root]
   ans = []
