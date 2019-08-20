@@ -1,0 +1,49 @@
+
+class treenode(object):
+  def __init__(self, value):
+    self.val = value
+    self.left = None
+    self.right = None
+
+# 创建一个二叉树：
+t1 = treenode(8)
+t1.left, t1.right = treenode(5), treenode(12)
+t1.left.left, t1.left.right = treenode(1), treenode(6)
+t1.right.right = treenode(15)
+
+                    8
+                  /   \
+                5       12
+              /   \       \
+            1      6       15
+
+# DFS的遍历顺序为:  8, 5, 1, 6, 12, 15
+8 --> 5 --> 1 --> 5 --> 6 --> 5 --> 8 --> 12 --> 15 --> 12 --> 8
+|     |     |           |                 |      |
+输出 输出  输出         输出              输出    输出
+
+def dfs(tree):
+  if tree is None:
+    return None
+  print(tree.val)
+  dfs(tree.left)
+  dfs(tree.right)
+  
+====================================================
+如果想将遍历结果存入数组，则需要helper函数：
+def dfs_helper(tree, res):
+  if tree is None:
+    return
+  res.append(tree.val)
+  dfs_helper(tree.left, res)
+  dfs_helper(tree.right, res)
+  return res
+def dfs2(tree):
+  return dfs_helper(tree, [])
+print(dfs2(t1))
+>> [8, 5, 1, 6, 12, 15]
+
+
+
+
+
