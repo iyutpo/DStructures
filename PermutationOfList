@@ -1,0 +1,39 @@
+给定一个数组，用Backtracking的方法，返回数组内所有元素可能的排列组合方式。
+
+Example:
+input: [1,2,3]
+output: [ [1,2,3], [1,3,2], [2,1,3], [2,3,1], [3,1,2], [3,2,1] ]
+
+假设给定的 数组长度为 n，那么该问题的搜索空间就是一棵 n叉树。上面例子就是个 3叉树。对这棵树进行DFS，该问题的回溯点就是深度（即templist的长度）为n时，回溯的条件就是当前元素已经出现在templist中了。
+
+回溯算法：
+
+def backtrack(res, templist, nums):
+  if len(nums) == len(templist):
+    res.append(templist[:])               # 这里一定要加[:]，否则res被append的值为[]
+  else:
+    for n in nums:
+      if n in templist:                   # 如果当前templist中已经有了 n，就跳过当前循环
+        continue
+      else:
+        templist.append(n)
+        backtrack(res, templist, nums)
+        templist.pop()                    # 这里一定要pop()，这样才能把templist结尾的元素用nums中的下一个值替换掉，然后遍历下一棵子树
+
+def permute(nums):
+  if not nums or len(nums) == 0:
+    return []
+  res = []
+  templist = []
+  backtrack(res, templist, nums)
+  return res
+  
+nums = [1,2,3]
+print(permute(nums))
+>> [[1, 2, 3], [1, 3, 2], [2, 1, 3], [2, 3, 1], [3, 1, 2], [3, 2, 1]]
+
+
+
+
+
+
