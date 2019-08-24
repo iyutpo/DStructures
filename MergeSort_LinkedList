@@ -1,0 +1,97 @@
+单链表的MergeSort：
+
+Example: 
+Input:
+ l1:  3 --> 7 --> 6 --> 9
+ l2:  1 --> 5 --> 8 --> 4 --> 2
+ 
+Output:
+ 1 --> 2 --> 3 --> 4 --> 5 --> 6 --> 7 --> 8 --> 9
+ 
+# 创建一个单链表节点的类
+class listnode(object):
+  def __init__(self, value):
+    self.val = value
+    self.next = None
+  def traverse(self, head):
+    curr = head
+    while curr:
+      print(curr.val)
+      curr = curr.next
+
+# 创建两个单链表：
+l1 = listnode(3)
+l1.next, l1.next.next = listnode(7), listnode(6)
+l1.next.next.next = listnode(9)
+
+l2 = listnode(1)
+l2.next, l2.next.next = listnode(5), listnode(8)
+l2.next.next.next = listnode(4)
+l2.next.next.next.next = listnode(2)
+
+def merge(alist1, alist2):
+  fakehead = listnode('None')
+  fake = fakehead
+  temp1, temp2 = alist1, alist2
+  while temp1 and temp2:
+    if temp1.val <= temp2.val:
+      fakehead.next = listnode(temp1.val)
+      fakehead = fakehead.next
+      temp1 = temp1.next
+    else:
+      fakehead.next = listnode(temp2.val)
+      fakehead = fakehead.next
+      temp2 = temp2.next
+  while temp1:
+    fakehead.next = listnode(temp1.val)
+    temp1 = temp1.next
+    fakehead = fakehead.next
+  while temp2:
+    fakehead.next = listnode(temp2.val)
+    temp2 = temp2.next
+    fakehead = fakehead.next
+  return fake.next
+
+def split(alist):
+  if alist is None or alist.next is None:
+    lefthalf = alist
+    righthalf = None
+  else:
+    slow, fast = alist, alist.next
+    while fast.next and fast.next.next:
+      slow = slow.next
+      fast = fast.next.next
+    if fast.next:
+      nextnode = slow.next
+      slow.next = None
+      return alist, nextnode
+    else:
+      nextnode = slow.next
+      slow.next = None
+      return alist, nextnode
+
+def mergesort(alist):
+  if not alist or not alist.next:
+    return alist
+  lefthalf, righthalf = split(alist)
+  left = mergesort(lefthalf)
+  right = mergesort(righthalf)
+  return merge(left, right)
+
+templist = merge(l1, l2)
+templist1 = mergesort(templist)
+print(templist1.traverse(templist1))
+>>1
+2
+3
+4
+5
+6
+7
+8
+9
+None
+ 
+
+
+
