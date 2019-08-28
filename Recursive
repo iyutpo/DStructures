@@ -56,7 +56,7 @@ if __name__ == '__main__':
 1.
 def printRev(n):
     if n > 0:
-        printRev(n - 1)
+        printRev(n - 1)              # 普通递归
         print(n)
 
 if __name__ == '__main__':
@@ -67,7 +67,7 @@ if __name__ == '__main__':
 def printInc(n):
     if n > 0:
         print(n)
-        printInc(n - 1)
+        printInc(n - 1)              # 尾递归
 
 if __name__ == '__main__':
   print_num_recursive_reverse(10)
@@ -82,6 +82,19 @@ if __name__ == '__main__':
 
 ![alt text](https://github.com/iyutpo/DStructures/blob/master/Recursive_01.jpg)
 Recursive_01.jpg
+
+这两段代码的区别就在于 递归行和输出行 的顺序。
+第一段代码在执行的时候，会首先进入 if 语句，然后，进入递归行，将问题不断分为子问题，直到 n = 0时，才进入 输出行（print(n)）。此时再输出 最近一次递归时 n 的值（1），次最近一次递归时 n 的值 （2），... 直到 n = 4，整个程序结束，也就得到了从 1 到 4 的升序打印。
+
+第二段代码在执行的时候，会首先进入 if 语句，然后，进入打印行（输出行），此时 n 为 4；然后进入递归行 进行第二层递归，在第二层递归中 打印出 此时的 n 为 3；... 直到 n 为 0 时，不满足 base case，跳出递归，程序结束。最后得到了 从 4 到 1 的降序打印。
+
+
+尾递归，就是将递归调用放在了函数最后。作用就是，普通递归，每一层递归都会产生新的局部变量， 必须创建新的调用栈，随着递归深度的增加，创建的栈也越多，从而爆栈（stack overflow）。
+然而，尾递归虽然也会创建新的栈，但是我们可以优化它，使得尾递归的每一层递归都使用同一个栈。如此来解决 stack overflow 和 递归深度的限制问题。但Python并不支持尾递归优化，但是一般的尾递归我们可以用一个迭代（iteration）来优化它。
+
+优化方法见：
+https://segmentfault.com/a/1190000007641519
+
 
 
 
