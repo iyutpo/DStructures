@@ -1,0 +1,89 @@
+递归结构：
+
+递归就是自己调用自己的函数。这样的函数通常会有一些参数，我们在分析这种函数的时候需要分解它的参数，从而让它解决更小一点的问题（子问题），当问题小到一定规模的时候（也叫base case），需要一个递归的出口返回结果。最常见的例子就是阶乘函数：
+
+  n! = n * (n - 1)!   if n > 0
+  n! = 1              if n = 0
+  
+所以，我们可以将上面的数学表达式写成一个递归函数：
+def factorial(n):
+  if n == 0:                     # base case
+    return 1
+  return factorial(n - 1) * n    # 子问题
+  
+一个可递归的问题要满足下面几个条件：
+1. 递归函数中必须要有的是 base case的部分，否则就会无限递归，导致爆栈溢出（stack overflow）。
+2. 问题必须是可分解的问题。例如，像要求 n!，就需要用 n * factorial(n - 1) ...
+3. 递归必须要向着 base case 靠近（也叫收敛）。
+
+
+=======================================================================
+下面我们尝试使用 deque（数据结构）来模拟一个递归：
+from collections import deque    
+
+class Stack(object):
+  def __init__(self):
+    self._deque = deque()
+  
+  def push(self, value):
+    return self._deque.append(value)
+    
+  def pop(self):
+    return self._deque.pop()
+    
+  def is_empty(self):
+    return len(self._deque) == 0
+  
+def print_num(n):
+  s = Stack()
+  while n > 0:
+    s.push(n)
+    n -= 1
+  
+  while not s.is_empty():
+    print(s.pop())
+
+if __name__ == '__main__':
+  print_num(10)
+
+运行结果： 打印出 1 到 10
+
+
+==========================================================================================
+尾递归：
+观察下面两段代码，并思考两端代码的输出结果：
+
+1.
+def printRev(n):
+    if n > 0:
+        printRev(n - 1)
+        print(n)
+
+if __name__ == '__main__':
+  print_num_recursive(10)
+  
+
+2.
+def printInc(n):
+    if n > 0:
+        print(n)
+        printInc(n - 1)
+
+if __name__ == '__main__':
+  print_num_recursive_reverse(10)
+
+
+输出结果：
+第一段：
+>> 1  2  3  4
+
+第二段：
+>> 4  3  2  1
+
+
+
+
+
+
+
+
