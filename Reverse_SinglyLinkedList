@@ -1,0 +1,171 @@
+Reverse a Singly Linked List:
+如何反转一个单链表（递归和迭代）？
+
+
+假设我们有一个单链表：
+1 --> 2 --> 3 --> 4 --> 5 --> None
+
+在 Recursion 一章中讲到过，Recursion 就是将 一个问题不断分割为它自己的子问题，然后逐一解决子问题的过程。同理，在反转单链表这个问题中， 我们需要不断地将当前节点的下一个节点进行反转，即：
+reverse(alist) --> reverse(alist.next) --> ... 
+
+之后就是确定 出口条件（base case），很容易想到，当一个单链表的结构为：
+1 --> None   或者 None  时，我们可以直接返回 这个 单链表本身，此时就是出口条件 （base case）。
+
+此时的代码可以写为（还不能运行）：
+def reverse_recursive(alist):
+  if not alist or not alist.next:
+    return alist
+    
+然后我们开始分析递归的过程：
+对于一个较长的单链表(alist) 1 --> 2  --> 3 --> 4 --> 5 --> None
+根据上面的base case，我们知道，当 指针 alist 指向 节点5 的时候，会触发 base case。而此时 alist 的位置正好是我们最终想要的结果的 头节点，所以 我们就 创建一个新的变量 new_head 来存放 未来的 头节点。
+
+此时有：
+                      new_head
+                         |
+                         v
+1 --> 2  --> 3 --> 4 --> 5 --> None
+                         ^
+                         |
+                       alist
+def reverse_recursive(alist):                   # 还不能运行
+  if not alist or not alist.next:
+    return alist
+  new_head = reverse_recursive(alist.next)      # 存放新的头节点 new_head
+
+
+然后我们就需要进行 反转。从图像上来说，反转的过程如下：
+                 alist         new_head
+                   |              |
+                   v              v
+1 --> 2  --> 3 --> 4 --> None     5            # 第一层递归
+                   ^              |
+                   |______________|
+简单描述上图的过程：
+1. 令 alist.next.next = alist  （从而有了从 节点5 指向 节点4 的指针）
+2. （重要）要让 当前递归层的  alist 指向 None， 即  alist.next = None
+3. 由于递归结构， alist 会随着 递归函数 向前移动，所以该操作不需要 添加额外 行
+4. 当 递归结构完成，也就是当前递归层的 alist 抵达 节点1，我们返回 new_head。即  return new_head
+
+           alist             new_head
+             |                   |
+             v                   v
+1 --> 2  --> 3 --> None   4      5             # 第二层递归
+             ^           | ^     |
+             |___________| |_____|
+
+....
+
+alist                           new_head
+|                                  |
+v                                  v
+1 --> None   2      3       4      5            # 最后一层递归
+^           | ^    | ^     | ^     |
+|___________| |____| |_____| |_____|
+
+
+所以根据上面 四个过程，我们将代码完善为：
+def reverse_recursive(alist):                   # 可以运行
+  if not alist or not alist.next:
+    return alist
+  new_head = reverse_recursive(alist.next)
+  alist.next.next = alist
+  alist.next = None
+  return new_head
+
+
+
+======================================================================================================
+相比于递归，迭代就比较 straight-forward：
+
+def reverse_iteration(alist):
+  if not alist or not alist.next:
+    return alist
+  prevnode = None                  # None 就是反转后的链表的 最后一个节点 所指向的 值
+  while alist.next:
+    nextnode = alist.next
+    alist.next = prevnode
+    prevnode = alist
+    alist = nextnode
+  nextnode.next = prevnode         # 注意！（见下图）
+  return nextnode
+
+
+首先我们有一个单链表 alist：
+  1 --> 2 --> 3 --> 4 --> 5 --> None
+  |
+alist
+
+首先添加一个 前节点  prevnode（数据类型为 None，而不是 链表的节点）
+
+None (prevnode)   1 --> 2 --> 3 --> 4 --> 5 --> None
+                  |     
+                alist  
+此时的代码为：
+def reverse_iteration(alist):
+  if not alist or not alist.next:
+    return alist
+  prevnode = None  
+  
+然后我们要进入迭代过程，该过程中我们要：
+1. 定义一个 当前节点 （alist）的  下节点（nextnode），即  nextnode = alist.next
+2. 将当前节点的next指针指向 前节点（prevnode），即 alist.next = prevnode
+3. 将该 前节点 （prevnode）移动到 当前节点（alist），即  prevnode = alist
+4. 将 当前节点 （alist） 移动到 下节点（nextnode）， 即 alist = nextnode
+
+
+我们绘图来实现上面的过程：
+1.
+None (prevnode)     1 --> 2 --> 3 --> 4 --> 5 --> None      # 第一次迭代的第 1 行  nextnode = alist.next
+                    |     |
+                  alist  nextnode
+
+2.
+None (prevnode) <-- 1     2 --> 3 --> 4 --> 5 --> None      # 第一次迭代的第 2 行  prevnode = alist
+                    |     |
+                  alist  nextnode
+
+3.
+                 prevnode
+                    |
+          None  <-- 1     2 --> 3 --> 4 --> 5 --> None      # 第一次迭代的第 3 行  prevnode = alist
+                    |     |
+                  alist  nextnode
+
+4.
+                prevnode  alist
+                    |     |
+          None  <-- 1     2 --> 3 --> 4 --> 5 --> None      # 第一次迭代的第 4 行  alist = nextnode
+                          |
+                       nextnode
+
+....
+（注意）（接 上面代码中的注意）
+4.
+                                 prevnode        alist
+                                      |            |
+          None  <-- 1 <-- 2 <-- 3 <-- 4     5 --> None      # 第四次迭代的第 4 行  alist = nextnode
+                                            |
+                                        nextnode
+在最后一次迭代执行完之后，我们发现此时的 nextnode 指向 None，这就是为什么 在 while loop之外还要加一句
+nextnode.next = prevnode
+然后才能返回 nextnode
+return nextnode
+
+完整代码：
+def reverse_iteration(alist):
+  if not alist or not alist.next:
+    return alist
+  prevnode = None                  # None 就是反转后的链表的 最后一个节点 所指向的 值
+  while alist.next:
+    nextnode = alist.next
+    alist.next = prevnode
+    prevnode = alist
+    alist = nextnode
+  nextnode.next = prevnode         # (注意！）
+  return nextnode
+
+
+
+
+
